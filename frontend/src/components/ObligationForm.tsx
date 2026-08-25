@@ -2,13 +2,16 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ObligationFormData } from '../types/obligation';
 import type { Obligation } from '../types/obligation';
+import FileUpload from './FileUpload';
 
 interface ObligationFormProps {
-  onSubmit: (data: ObligationFormData) => void;
+  onSubmit: (data: ObligationFormData, file?: File | null) => void;
   onClose: () => void;
   isSubmitting: boolean;
   initialData?: Obligation | null;
   mode?: 'create' | 'edit';
+  /** Pre-check the attachment checkbox when opening in edit mode to attach proof */
+  defaultWantAttachment?: boolean;
 }
 
 const CURRENCIES = [
@@ -22,6 +25,7 @@ export default function ObligationForm({
   isSubmitting,
   initialData,
   mode = 'create',
+  defaultWantAttachment = false,
 }: ObligationFormProps) {
   const [formData, setFormData] = useState<ObligationFormData>({
     title: '',
@@ -35,6 +39,11 @@ export default function ObligationForm({
     notes: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Attachment state
+  const [wantAttachment, setWantAttachment] = useState(defaultWantAttachment);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -77,6 +86,8 @@ export default function ObligationForm({
     e.preventDefault();
     if (!validate()) return;
 
+    setUploadError(null);
+
     const data: ObligationFormData = {
       ...formData,
       title: formData.title.trim(),
@@ -87,7 +98,8 @@ export default function ObligationForm({
       notes: formData.notes?.trim() || undefined,
     };
 
-    onSubmit(data);
+    // Pass file only if checkbox is checked and a file is selected
+    onSubmit(data, wantAttachment ? selectedFile : null);
   }
 
   function updateField(field: keyof ObligationFormData, value: string) {
@@ -244,6 +256,15 @@ export default function ObligationForm({
               className="w-full rounded-lg border border-surface-200 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 resize-none"
             />
           </div>
+
+          {/* Attachment upload */}
+          <FileUpload
+            file={selectedFile}
+            onFileSelect={setSelectedFile}
+            wantAttachment={wantAttachment}
+            onWantAttachmentChange={setWantAttachment}
+            error={uploadError}
+          />
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-100">

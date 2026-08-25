@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit3, Trash2, Calendar, Building2, Tag, CreditCard, FileText, StickyNote } from 'lucide-react';
-import { useObligation, useUpdateObligation, useDeleteObligation } from '../hooks/useObligations';
+import { useObligation, useUpdateObligation, useDeleteObligation, useUploadAttachment, useDeleteAttachment } from '../hooks/useObligations';
 import StatusBadge, { formatDaysRemaining } from '../components/StatusBadge';
 import { formatCurrency, formatDate, getCategoryLabel } from '../components/ObligationCard';
 import ObligationForm from '../components/ObligationForm';
 import DeleteConfirmation from '../components/DeleteConfirmation';
+import AttachmentDisplay from '../components/AttachmentDisplay';
 import Toast, { type ToastData } from '../components/Toast';
 import type { ObligationFormData } from '../types/obligation';
 
@@ -15,9 +16,12 @@ export default function ObligationDetail() {
   const { data: obligation, isLoading, error } = useObligation(id!);
   const updateMutation = useUpdateObligation();
   const deleteMutation = useDeleteObligation();
+  const uploadMutation = useUploadAttachment();
+  const deleteAttachmentMutation = useDeleteAttachment();
 
   const [showEditForm, setShowEditForm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [openEditWithAttachment, setOpenEditWithAttachment] = useState(false);
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
   const addToast = useCallback((type: 'success' | 'error', message: string) => {
@@ -29,13 +33,35 @@ export default function ObligationDetail() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  function handleUpdate(data: ObligationFormData) {
+  const isFormSubmitting = updateMutation.isPending || uploadMutation.isPending;
+
+  function handleUpdate(data: ObligationFormData, file?: File | null) {
     updateMutation.mutate(
       { id: id!, data },
       {
         onSuccess: () => {
-          setShowEditForm(false);
-          addToast('success', 'Changes saved successfully');
+          if (file) {
+            // Upload attachment after successful obligation update
+            uploadMutation.mutate(
+              { obligationId: id!, file },
+              {
+                onSuccess: () => {
+                  setShowEditForm(false);
+                  setOpenEditWithAttachment(false);
+                  addToast('success', 'Changes saved with attachment');
+                },
+                onError: (err) => {
+                  setShowEditForm(false);
+                  setOpenEditWithAttachment(false);
+                  addToast('error', `Changes saved but attachment upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                },
+              }
+            );
+          } else {
+            setShowEditForm(false);
+            setOpenEditWithAttachment(false);
+            addToast('success', 'Changes saved successfully');
+          }
         },
         onError: (err) => {
           addToast('error', err instanceof Error ? err.message : 'Could not save changes.');
@@ -54,6 +80,22 @@ export default function ObligationDetail() {
         addToast('error', err instanceof Error ? err.message : 'This warranty could not be deleted.');
       },
     });
+  }
+
+  function handleDeleteAttachment(attachmentId: string) {
+    deleteAttachmentMutation.mutate(attachmentId, {
+      onSuccess: () => {
+        addToast('success', 'Attachment removed');
+      },
+      onError: (err) => {
+        addToast('error', err instanceof Error ? err.message : 'Could not remove attachment.');
+      },
+    });
+  }
+
+  function handleAttachProof() {
+    setOpenEditWithAttachment(true);
+    setShowEditForm(true);
   }
 
   if (isLoading) {
@@ -187,6 +229,14 @@ export default function ObligationDetail() {
               <p className="text-sm text-surface-700 leading-relaxed whitespace-pre-wrap">{obligation.notes}</p>
             </div>
           )}
+
+          {/* Attachment section */}
+          <AttachmentDisplay
+            attachments={obligation.attachments}
+            onDelete={handleDeleteAttachment}
+            onAttachProof={handleAttachProof}
+            isDeleting={deleteAttachmentMutation.isPending}
+          />
         </div>
 
         {/* Actions */}
@@ -200,7 +250,7 @@ export default function ObligationDetail() {
             Delete
           </button>
           <button
-            onClick={() => setShowEditForm(true)}
+            onClick={() => { setOpenEditWithAttachment(false); setShowEditForm(true); }}
             className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white 
               hover:bg-primary-700 transition-colors"
           >
@@ -214,10 +264,11 @@ export default function ObligationDetail() {
       {showEditForm && (
         <ObligationForm
           onSubmit={handleUpdate}
-          onClose={() => setShowEditForm(false)}
-          isSubmitting={updateMutation.isPending}
+          onClose={() => { setShowEditForm(false); setOpenEditWithAttachment(false); }}
+          isSubmitting={isFormSubmitting}
           initialData={obligation}
           mode="edit"
+          defaultWantAttachment={openEditWithAttachment}
         />
       )}
 
