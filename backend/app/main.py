@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.attachments import router as attachments_router
+from app.api.bills import router as bills_router
 from app.api.dashboard import router as dashboard_router
 from app.api.documents import router as documents_router
 from app.api.obligations import router as obligations_router
@@ -14,6 +15,7 @@ from app.database.base import Base
 from app.database.connection import SessionLocal, engine
 from app.database.seed import seed_demo_data
 from app.models.attachment import Attachment  # noqa: F401 — ensure table creation
+from app.models.bill import Bill  # noqa: F401 — ensure table creation
 from app.models.document import Document  # noqa: F401 — ensure table creation
 
 # Load .env from project root
@@ -63,6 +65,7 @@ app.include_router(obligations_router)
 app.include_router(dashboard_router)
 app.include_router(attachments_router)
 app.include_router(documents_router)
+app.include_router(bills_router)
 
 
 @app.get("/api/health")
