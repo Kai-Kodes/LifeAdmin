@@ -131,56 +131,51 @@ export default function BillCard({
           }`}
       >
         <div>
-          {/* Header Row: Paid Checkbox Toggle & Title */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3 min-w-0">
-              <button
-                onClick={() => onTogglePaid(bill.id)}
-                title={bill.is_paid ? 'Mark as Unpaid' : 'Mark as Paid'}
-                className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-transform active:scale-95"
-              >
-                {bill.is_paid ? (
-                  <CheckCircle2 size={24} className="text-emerald-600 dark:text-emerald-400" />
-                ) : (
-                  <Circle size={24} className="text-surface-300 dark:text-surface-600 hover:text-primary-500" />
-                )}
-              </button>
+          {/* Top Row: Checkbox Toggle & Full Bill Title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => onTogglePaid(bill.id)}
+              title={bill.is_paid ? 'Mark as Unpaid' : 'Mark as Paid'}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-transform active:scale-95"
+            >
+              {bill.is_paid ? (
+                <CheckCircle2 size={24} className="text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <Circle size={24} className="text-surface-300 dark:text-surface-600 hover:text-primary-500" />
+              )}
+            </button>
 
-              <div className="min-w-0">
-                <h3
-                  className={`text-base font-semibold text-surface-900 dark:text-white truncate ${
-                    bill.is_paid ? 'line-through text-surface-500 dark:text-surface-400' : ''
-                  }`}
-                  title={bill.name}
-                >
-                  {bill.name}
-                </h3>
-                {bill.amount !== null && (
-                  <p className="mt-0.5 text-sm font-bold text-surface-800 dark:text-surface-200">
-                    {formatAmount(bill.amount, bill.currency)}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="shrink-0">{getStatusBadge()}</div>
+            <h3
+              className={`text-base font-bold text-surface-900 dark:text-white truncate min-w-0 ${
+                bill.is_paid ? 'line-through text-surface-500 dark:text-surface-400' : ''
+              }`}
+              title={bill.name}
+            >
+              {bill.name}
+            </h3>
           </div>
 
-          {/* Notes / Attachment info */}
+          {/* Line 2: Due Date Badge */}
+          <div className="mt-2.5 pl-10 flex items-center">
+            {getStatusBadge()}
+          </div>
+
+          {/* Notes */}
           {bill.notes && (
-            <p className="mt-3 text-xs text-surface-500 dark:text-surface-400 line-clamp-2 pl-10">
+            <p className="mt-2.5 text-xs text-surface-500 dark:text-surface-400 line-clamp-2 pl-10">
               {bill.notes}
             </p>
           )}
 
+          {/* Attachment */}
           {bill.attachment && (
-            <div className="mt-3 pl-10 flex items-center gap-2">
+            <div className="mt-2.5 pl-10 flex items-center gap-2">
               <button
                 onClick={handleViewAttachment}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-surface-100 dark:bg-surface-800 px-2.5 py-1 text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
               >
                 <Paperclip size={13} className="text-primary-600 dark:text-primary-400" />
-                <span className="truncate max-w-[150px]">
+                <span className="truncate max-w-[180px]">
                   {bill.attachment.filename}
                 </span>
                 <Eye size={12} className="ml-0.5 opacity-60" />
@@ -189,11 +184,11 @@ export default function BillCard({
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="mt-4 pt-3 border-t border-surface-100 dark:border-surface-800 flex items-center justify-between gap-2">
+        {/* Footer Actions: Mark Paid on left, Amount above Edit/Delete on right */}
+        <div className="mt-4 pt-3 border-t border-surface-100 dark:border-surface-800 flex items-end justify-between gap-3">
           <button
             onClick={() => onTogglePaid(bill.id)}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+            className={`text-xs font-semibold px-3.5 py-2 rounded-xl transition-colors cursor-pointer ${
               bill.is_paid
                 ? 'bg-surface-100 text-surface-600 hover:bg-surface-200 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700'
                 : 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:text-white dark:hover:bg-emerald-500 shadow-xs'
@@ -202,21 +197,28 @@ export default function BillCard({
             {bill.is_paid ? 'Mark Unpaid' : 'Mark Paid'}
           </button>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onEdit(bill)}
-              title="Edit bill details"
-              className="rounded-lg p-1.5 text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
-            >
-              <Edit3 size={15} />
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              title="Delete bill"
-              className="rounded-lg p-1.5 text-surface-400 hover:bg-danger-50 dark:hover:bg-danger-950/60 hover:text-danger-600 transition-colors"
-            >
-              <Trash2 size={15} />
-            </button>
+          <div className="flex flex-col items-end gap-1">
+            {bill.amount !== null && (
+              <span className="text-sm font-extrabold text-surface-900 dark:text-white tracking-tight">
+                {formatAmount(bill.amount, bill.currency)}
+              </span>
+            )}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onEdit(bill)}
+                title="Edit bill details"
+                className="rounded-lg p-1.5 text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
+              >
+                <Edit3 size={15} />
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                title="Delete bill"
+                className="rounded-lg p-1.5 text-surface-400 hover:bg-danger-50 dark:hover:bg-danger-950/60 hover:text-danger-600 transition-colors"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
