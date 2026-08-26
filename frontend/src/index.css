@@ -14,37 +14,32 @@
   --color-primary-800: oklch(0.39 0.16 264);
   --color-primary-900: oklch(0.34 0.13 264);
   --color-primary-950: oklch(0.20 0.10 264);
-
-  --color-surface-50: #f8fafc;
-  --color-surface-100: #f1f5f9;
-  --color-surface-200: #e2e8f0;
-  --color-surface-300: #cbd5e1;
-  --color-surface-400: #94a3b8;
-  --color-surface-500: #64748b;
-  --color-surface-600: #475569;
-  --color-surface-700: #334155;
-  --color-surface-800: #1e293b;
-  --color-surface-900: #0f172a;
-  --color-surface-950: #090d16;
-
-  --color-warning-50: #fffbeb;
-  --color-warning-100: #fef3c7;
-  --color-warning-500: #f59e0b;
-  --color-warning-600: #d97706;
-  --color-warning-700: #b45309;
-  --color-warning-800: #92400e;
-
-  --color-danger-50: #fff1f2;
-  --color-danger-100: #ffe4e6;
-  --color-danger-500: #f43f5e;
-  --color-danger-600: #e11d48;
-  --color-danger-700: #be123c;
-
-  --color-success-50: #ecfdf5;
-  --color-success-100: #d1fae5;
-  --color-success-500: #10b981;
-  --color-success-600: #059669;
-  --color-success-700: #047857;
+  --color-surface-50: oklch(0.985 0.002 264);
+  --color-surface-100: oklch(0.967 0.003 264);
+  --color-surface-200: oklch(0.928 0.006 264);
+  --color-surface-300: oklch(0.869 0.010 264);
+  --color-surface-400: oklch(0.704 0.015 264);
+  --color-surface-500: oklch(0.553 0.016 264);
+  --color-surface-600: oklch(0.446 0.014 264);
+  --color-surface-700: oklch(0.373 0.013 264);
+  --color-surface-800: oklch(0.278 0.010 264);
+  --color-surface-900: oklch(0.210 0.007 264);
+  --color-surface-950: oklch(0.140 0.005 264);
+  --color-warning-50: oklch(0.98 0.03 85);
+  --color-warning-100: oklch(0.95 0.07 85);
+  --color-warning-500: oklch(0.77 0.15 75);
+  --color-warning-600: oklch(0.67 0.16 55);
+  --color-warning-700: oklch(0.56 0.15 45);
+  --color-danger-50: oklch(0.97 0.02 25);
+  --color-danger-100: oklch(0.94 0.05 25);
+  --color-danger-500: oklch(0.63 0.21 25);
+  --color-danger-600: oklch(0.55 0.20 25);
+  --color-danger-700: oklch(0.47 0.17 25);
+  --color-success-50: oklch(0.97 0.02 155);
+  --color-success-100: oklch(0.93 0.05 155);
+  --color-success-500: oklch(0.70 0.15 155);
+  --color-success-600: oklch(0.60 0.14 155);
+  --color-success-700: oklch(0.50 0.12 155);
 }
 
 * {
@@ -60,121 +55,50 @@ body {
   color: var(--color-surface-900);
 }
 
-/* ==========================================
-   Dark Mode Clean Color & Contrast System
-   ========================================== */
+/* Dark mode global overrides */
 html.dark body {
-  background-color: #090d16;
-  color: #f8fafc;
+  background-color: var(--color-surface-900);
+  color: var(--color-surface-100);
 }
 
-/* Card & Container backgrounds */
 html.dark .bg-white {
-  background-color: #131b2e !important;
-  color: #f8fafc !important;
+  background-color: var(--color-surface-950) !important;
+  color: var(--color-surface-100);
 }
 
 html.dark .bg-surface-50 {
-  background-color: #090d16 !important;
+  background-color: var(--color-surface-900) !important;
 }
 
 html.dark .bg-surface-100 {
-  background-color: #1e293b !important;
+  background-color: var(--color-surface-800) !important;
 }
 
-/* Borders */
-html.dark .border-surface-100 {
-  border-color: #1e293b !important;
-}
-
+html.dark .border-surface-100,
 html.dark .border-surface-200 {
-  border-color: #24334a !important;
+  border-color: var(--color-surface-800) !important;
 }
 
-html.dark .border-surface-300 {
-  border-color: #334155 !important;
-}
-
-/* Text Colors */
 html.dark .text-surface-900 {
-  color: #f8fafc !important;
+  color: var(--color-surface-50) !important;
 }
 
 html.dark .text-surface-800,
 html.dark .text-surface-700 {
-  color: #e2e8f0 !important;
+  color: var(--color-surface-200) !important;
 }
 
 html.dark .text-surface-600,
 html.dark .text-surface-500 {
-  color: #94a3b8 !important;
+  color: var(--color-surface-400) !important;
 }
 
-html.dark .text-surface-400 {
-  color: #64748b !important;
-}
-
-/* Badges & Status Pill Contrast Fixes */
-html.dark .bg-success-50 {
-  background-color: #064e3b !important;
-  border-color: #047857 !important;
-}
-html.dark .text-success-700,
-html.dark .text-success-800 {
-  color: #6ee7b7 !important;
-}
-
-html.dark .bg-warning-50 {
-  background-color: #78350f !important;
-  border-color: #b45309 !important;
-}
-html.dark .text-warning-700,
-html.dark .text-warning-800 {
-  color: #fde68a !important;
-}
-
-html.dark .bg-danger-50 {
-  background-color: #7f1d1d !important;
-  border-color: #be123c !important;
-}
-html.dark .text-danger-700,
-html.dark .text-danger-800 {
-  color: #fca5a5 !important;
-}
-
-html.dark .bg-primary-50 {
-  background-color: #1e1b4b !important;
-  border-color: #4338ca !important;
-}
-html.dark .text-primary-700,
-html.dark .text-primary-800 {
-  color: #c7d2fe !important;
-}
-
-/* Form Controls in Dark Mode */
 html.dark input,
 html.dark select,
 html.dark textarea {
-  background-color: #0f172a !important;
-  border-color: #24334a !important;
-  color: #f8fafc !important;
-}
-
-html.dark input::placeholder,
-html.dark textarea::placeholder {
-  color: #64748b !important;
-}
-
-html.dark input:focus,
-html.dark select:focus,
-html.dark textarea:focus {
-  border-color: #6366f1 !important;
-  outline: 2px solid #6366f1 !important;
-}
-
-/* Dropzone in dark mode */
-html.dark .border-dashed {
-  border-color: #334155 !important;
+  background-color: var(--color-surface-900) !important;
+  border-color: var(--color-surface-800) !important;
+  color: var(--color-surface-100) !important;
 }
 
 /* Scrollbar styling */
@@ -187,16 +111,16 @@ html.dark .border-dashed {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-surface-300);
   border-radius: 3px;
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--color-surface-700);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-surface-400);
 }
 
 /* Smooth transitions globally */
@@ -206,6 +130,6 @@ button, a, input, select, textarea {
 
 /* Focus ring */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
