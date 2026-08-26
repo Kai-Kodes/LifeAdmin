@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Plus, Search, SlidersHorizontal } from 'lucide-react';
-import { useObligations, useCreateObligation } from '../hooks/useObligations';
+import { useObligations, useCreateObligation, useUploadAttachment } from '../hooks/useObligations';
 import ObligationCard from '../components/ObligationCard';
 import ObligationForm from '../components/ObligationForm';
 import Toast, { type ToastData } from '../components/Toast';
@@ -35,6 +35,7 @@ export default function ObligationList() {
 
   const { data: obligations, isLoading, error } = useObligations(queryParams);
   const createMutation = useCreateObligation();
+  const uploadMutation = useUploadAttachment();
 
   const addToast = useCallback((type: 'success' | 'error', message: string) => {
     const id = Date.now().toString();
@@ -45,11 +46,29 @@ export default function ObligationList() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  function handleCreate(data: ObligationFormData) {
+  const isSubmitting = createMutation.isPending || uploadMutation.isPending;
+
+  function handleCreate(data: ObligationFormData, file?: File | null) {
     createMutation.mutate(data, {
-      onSuccess: () => {
-        setShowForm(false);
-        addToast('success', 'Warranty added successfully');
+      onSuccess: (created) => {
+        if (file) {
+          uploadMutation.mutate(
+            { obligationId: created.id, file },
+            {
+              onSuccess: () => {
+                setShowForm(false);
+                addToast('success', 'Warranty added with attachment');
+              },
+              onError: (err) => {
+                setShowForm(false);
+                addToast('error', `Warranty added but attachment upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+              },
+            }
+          );
+        } else {
+          setShowForm(false);
+          addToast('success', 'Warranty added successfully');
+        }
       },
       onError: (err) => {
         addToast('error', err instanceof Error ? err.message : 'Could not save this warranty.');
@@ -174,7 +193,7 @@ export default function ObligationList() {
         <ObligationForm
           onSubmit={handleCreate}
           onClose={() => setShowForm(false)}
-          isSubmitting={createMutation.isPending}
+          isSubmitting={isSubmitting}
         />
       )}
 
