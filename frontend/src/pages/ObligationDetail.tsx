@@ -276,6 +276,7 @@ export default function ObligationDetail() {
       {showDeleteConfirm && (
         <DeleteConfirmation
           title={obligation.title}
+          itemType="warranty"
           onConfirm={handleDelete}
           onCancel={() => setShowDeleteConfirm(false)}
           isDeleting={deleteMutation.isPending}

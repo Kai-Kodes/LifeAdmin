@@ -1,4 +1,5 @@
 import type { Attachment, DashboardStats, Obligation, ObligationFormData } from '../types/obligation';
+import type { DocumentItem } from '../types/document';
 
 const BASE_URL = '/api';
 
@@ -88,5 +89,68 @@ export const api = {
 
   getAttachmentUrl: (attachmentId: string) =>
     `${BASE_URL}/attachments/${attachmentId}/download`,
+
+  // Documents
+  getDocuments: (params?: { search?: string; sort_by?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.sort_by) searchParams.set('sort_by', params.sort_by);
+    const qs = searchParams.toString();
+    return request<DocumentItem[]>(`/documents${qs ? `?${qs}` : ''}`);
+  },
+
+  getDocument: (id: string) => request<DocumentItem>(`/documents/${id}`),
+
+  createDocument: async (name: string, file: File, renewalDate?: string): Promise<DocumentItem> => {
+    const formData = new FormData();
+    formData.append('name', name);
+    if (renewalDate) formData.append('renewal_date', renewalDate);
+    formData.append('file', file);
+
+    const response = await fetch(`${BASE_URL}/documents`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new Error(error.detail || `Upload failed with status ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+  updateDocument: (
+    id: string,
+    data: { name?: string; renewal_date?: string; clear_renewal_date?: boolean }
+  ) =>
+    request<DocumentItem>(`/documents/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  replaceDocumentFile: async (id: string, file: File): Promise<DocumentItem> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${BASE_URL}/documents/${id}/file`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'File replacement failed' }));
+      throw new Error(error.detail || `Replacement failed with status ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+  deleteDocument: (id: string) =>
+    request<void>(`/documents/${id}`, {
+      method: 'DELETE',
+    }),
+
+  getDocumentDownloadUrl: (id: string) => `${BASE_URL}/documents/${id}/download`,
 };
 

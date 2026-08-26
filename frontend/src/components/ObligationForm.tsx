@@ -263,6 +263,8 @@ export default function ObligationForm({
             onFileSelect={setSelectedFile}
             wantAttachment={wantAttachment}
             onWantAttachmentChange={setWantAttachment}
+            showCheckbox={true}
+            sectionTitle="Proof of Purchase"
             error={uploadError}
           />
 

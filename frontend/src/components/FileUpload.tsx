@@ -26,17 +26,25 @@ function getFileIcon(mimeType: string) {
 interface FileUploadProps {
   file: File | null;
   onFileSelect: (file: File | null) => void;
-  wantAttachment: boolean;
-  onWantAttachmentChange: (want: boolean) => void;
+  wantAttachment?: boolean;
+  onWantAttachmentChange?: (want: boolean) => void;
+  showCheckbox?: boolean;
+  checkboxLabel?: string;
+  sectionTitle?: string;
   error?: string | null;
+  disabled?: boolean;
 }
 
 export default function FileUpload({
   file,
   onFileSelect,
-  wantAttachment,
+  wantAttachment = true,
   onWantAttachmentChange,
+  showCheckbox = false,
+  checkboxLabel = 'I want to attach proof of purchase',
+  sectionTitle,
   error,
+  disabled = false,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -49,7 +57,6 @@ export default function FileUpload({
     if (!ACCEPTED_TYPES.includes(f.type) && f.type !== '') {
       return 'Unsupported file type. Please upload a PDF or supported image file.';
     }
-    // Check extension as fallback for missing MIME type
     const ext = f.name.split('.').pop()?.toLowerCase() || '';
     const validExts = ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tif', 'tiff', 'svg', 'heic', 'heif'];
     if (!validExts.includes(ext)) {
@@ -70,7 +77,7 @@ export default function FileUpload({
   }, [validateFile, onFileSelect]);
 
   const handleCheckboxChange = useCallback((checked: boolean) => {
-    onWantAttachmentChange(checked);
+    onWantAttachmentChange?.(checked);
     if (!checked) {
       onFileSelect(null);
       setValidationError(null);
@@ -79,15 +86,17 @@ export default function FileUpload({
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    if (disabled) return;
     setDragOver(false);
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) handleFileChange(droppedFile);
-  }, [handleFileChange]);
+  }, [handleFileChange, disabled]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    if (disabled) return;
     setDragOver(true);
-  }, []);
+  }, [disabled]);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -95,31 +104,35 @@ export default function FileUpload({
   }, []);
 
   const displayError = validationError || error;
+  const isUploadVisible = !showCheckbox || wantAttachment;
 
   return (
-    <div className="border-t border-surface-100 pt-4">
-      <p className="text-sm font-medium text-surface-700 mb-2">Proof of Purchase</p>
+    <div className={sectionTitle || showCheckbox ? "border-t border-surface-100 pt-4" : ""}>
+      {sectionTitle && <p className="text-sm font-medium text-surface-700 mb-2">{sectionTitle}</p>}
 
-      {/* Checkbox */}
-      <label htmlFor="want-attachment" className="flex items-center gap-2.5 cursor-pointer select-none group">
-        <input
-          id="want-attachment"
-          type="checkbox"
-          checked={wantAttachment}
-          onChange={(e) => handleCheckboxChange(e.target.checked)}
-          className="h-4 w-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
-        />
-        <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">
-          I want to attach proof of purchase
-        </span>
-      </label>
+      {/* Checkbox (Optional, for Obligation form) */}
+      {showCheckbox && (
+        <label htmlFor="want-attachment" className="flex items-center gap-2.5 cursor-pointer select-none group">
+          <input
+            id="want-attachment"
+            type="checkbox"
+            checked={wantAttachment}
+            onChange={(e) => handleCheckboxChange(e.target.checked)}
+            disabled={disabled}
+            className="h-4 w-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+          />
+          <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">
+            {checkboxLabel}
+          </span>
+        </label>
+      )}
 
-      {/* Upload area (only when checkbox is checked) */}
-      {wantAttachment && (
-        <div className="mt-3">
+      {/* Upload area */}
+      {isUploadVisible && (
+        <div className={showCheckbox ? "mt-3" : ""}>
           {file ? (
             /* Selected file preview */
-            <div className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-4 py-3">
               {getFileIcon(file.type)}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-surface-800 truncate">{file.name}</p>
@@ -127,6 +140,7 @@ export default function FileUpload({
               </div>
               <button
                 type="button"
+                disabled={disabled}
                 onClick={() => {
                   onFileSelect(null);
                   setValidationError(null);
@@ -145,19 +159,20 @@ export default function FileUpload({
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
-              onClick={() => fileInputRef.current?.click()}
-              className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 cursor-pointer transition-colors
+              onClick={() => !disabled && fileInputRef.current?.click()}
+              className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-5 cursor-pointer transition-colors
+                ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
                 ${dragOver
                   ? 'border-primary-400 bg-primary-50'
                   : 'border-surface-200 bg-surface-50 hover:border-surface-300 hover:bg-surface-100'
                 }`}
             >
-              <Upload size={20} className={`mb-2 ${dragOver ? 'text-primary-500' : 'text-surface-400'}`} />
+              <Upload size={22} className={`mb-1.5 ${dragOver ? 'text-primary-500' : 'text-surface-400'}`} />
               <p className="text-sm text-surface-600">
                 <span className="hidden sm:inline">Drop your file here or </span>
                 <span className="font-medium text-primary-600">choose file</span>
               </p>
-              <p className="mt-1 text-xs text-surface-400">PDF, JPG, PNG, WEBP, etc. · Max 10 MB</p>
+              <p className="mt-1 text-xs text-surface-400">PDF or image file · Max 10 MB</p>
             </div>
           )}
 
@@ -166,12 +181,13 @@ export default function FileUpload({
             ref={fileInputRef}
             type="file"
             accept={ACCEPT_STRING}
+            disabled={disabled}
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) handleFileChange(f);
             }}
             className="hidden"
-            aria-label="Upload proof of purchase"
+            aria-label="Upload document file"
           />
 
           {/* Error */}

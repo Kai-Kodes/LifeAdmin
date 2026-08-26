@@ -2,12 +2,13 @@ import { AlertTriangle } from 'lucide-react';
 
 interface DeleteConfirmationProps {
   title: string;
+  itemType?: string;
   onConfirm: () => void;
   onCancel: () => void;
   isDeleting: boolean;
 }
 
-export default function DeleteConfirmation({ title, onConfirm, onCancel, isDeleting }: DeleteConfirmationProps) {
+export default function DeleteConfirmation({ title, itemType = 'item', onConfirm, onCancel, isDeleting }: DeleteConfirmationProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onCancel}>
       <div className="absolute inset-0 bg-surface-900/40 backdrop-blur-sm" />
@@ -20,7 +21,7 @@ export default function DeleteConfirmation({ title, onConfirm, onCancel, isDelet
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-50 mb-4">
             <AlertTriangle size={24} className="text-danger-600" />
           </div>
-          <h3 className="text-lg font-semibold text-surface-900">Delete this warranty?</h3>
+          <h3 className="text-lg font-semibold text-surface-900">Delete this {itemType}?</h3>
           <p className="mt-2 text-sm text-surface-500">
             <span className="font-medium text-surface-700">{title}</span> will be permanently removed. This action cannot be undone.
           </p>

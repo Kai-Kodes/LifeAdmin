@@ -4,6 +4,7 @@ import AppLayout from './layouts/AppLayout';
 import Dashboard from './pages/Dashboard';
 import ObligationList from './pages/ObligationList';
 import ObligationDetail from './pages/ObligationDetail';
+import Documents from './pages/Documents';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 const queryClient = new QueryClient({
@@ -33,15 +34,7 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="documents"
-              element={
-                <PlaceholderPage
-                  title="Documents"
-                  description="Store and organize important documents like warranties, invoices, and receipts. This feature is in development."
-                />
-              }
-            />
+            <Route path="documents" element={<Documents />} />
             <Route
               path="settings"
               element={
