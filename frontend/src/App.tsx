@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import ObligationList from './pages/ObligationList';
 import ObligationDetail from './pages/ObligationDetail';
 import Documents from './pages/Documents';
+import Bills from './pages/Bills';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 const queryClient = new QueryClient({
@@ -25,6 +26,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="obligations" element={<ObligationList />} />
             <Route path="obligations/:id" element={<ObligationDetail />} />
+            <Route path="bills" element={<Bills />} />
             <Route
               path="calendar"
               element={

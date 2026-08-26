@@ -1,5 +1,6 @@
 import type { Attachment, DashboardStats, Obligation, ObligationFormData } from '../types/obligation';
 import type { DocumentItem } from '../types/document';
+import type { BillItem, BillFormData } from '../types/bill';
 
 const BASE_URL = '/api';
 
@@ -152,5 +153,55 @@ export const api = {
     }),
 
   getDocumentDownloadUrl: (id: string) => `${BASE_URL}/documents/${id}/download`,
+
+  // Bills
+  getBills: (params?: { search?: string; status?: string; sort_by?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.status) searchParams.set('status', params.status);
+    if (params?.sort_by) searchParams.set('sort_by', params.sort_by);
+    const qs = searchParams.toString();
+    return request<BillItem[]>(`/bills${qs ? `?${qs}` : ''}`);
+  },
+
+  getBill: (id: string) => request<BillItem>(`/bills/${id}`),
+
+  createBill: async (data: BillFormData, file?: File): Promise<BillItem> => {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('due_date', data.due_date);
+    if (data.amount !== undefined && data.amount !== '') formData.append('amount', String(data.amount));
+    if (data.currency) formData.append('currency', data.currency);
+    if (data.notes) formData.append('notes', data.notes);
+    if (file) formData.append('file', file);
+
+    const response = await fetch(`${BASE_URL}/bills`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Creation failed' }));
+      throw new Error(error.detail || `Bill creation failed with status ${response.status}`);
+    }
+
+    return response.json();
+  },
+
+  updateBill: (id: string, data: Partial<BillFormData>) =>
+    request<BillItem>(`/bills/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  toggleBillPaid: (id: string) =>
+    request<BillItem>(`/bills/${id}/toggle-paid`, {
+      method: 'PATCH',
+    }),
+
+  deleteBill: (id: string) =>
+    request<void>(`/bills/${id}`, {
+      method: 'DELETE',
+    }),
 };
 

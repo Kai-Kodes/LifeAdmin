@@ -13,6 +13,7 @@
   --color-primary-700: oklch(0.46 0.19 264);
   --color-primary-800: oklch(0.39 0.16 264);
   --color-primary-900: oklch(0.34 0.13 264);
+  --color-primary-950: oklch(0.20 0.10 264);
   --color-surface-50: oklch(0.985 0.002 264);
   --color-surface-100: oklch(0.967 0.003 264);
   --color-surface-200: oklch(0.928 0.006 264);
@@ -23,6 +24,7 @@
   --color-surface-700: oklch(0.373 0.013 264);
   --color-surface-800: oklch(0.278 0.010 264);
   --color-surface-900: oklch(0.210 0.007 264);
+  --color-surface-950: oklch(0.140 0.005 264);
   --color-warning-50: oklch(0.98 0.03 85);
   --color-warning-100: oklch(0.95 0.07 85);
   --color-warning-500: oklch(0.77 0.15 75);
@@ -53,6 +55,52 @@ body {
   color: var(--color-surface-900);
 }
 
+/* Dark mode global overrides */
+html.dark body {
+  background-color: var(--color-surface-900);
+  color: var(--color-surface-100);
+}
+
+html.dark .bg-white {
+  background-color: var(--color-surface-950) !important;
+  color: var(--color-surface-100);
+}
+
+html.dark .bg-surface-50 {
+  background-color: var(--color-surface-900) !important;
+}
+
+html.dark .bg-surface-100 {
+  background-color: var(--color-surface-800) !important;
+}
+
+html.dark .border-surface-100,
+html.dark .border-surface-200 {
+  border-color: var(--color-surface-800) !important;
+}
+
+html.dark .text-surface-900 {
+  color: var(--color-surface-50) !important;
+}
+
+html.dark .text-surface-800,
+html.dark .text-surface-700 {
+  color: var(--color-surface-200) !important;
+}
+
+html.dark .text-surface-600,
+html.dark .text-surface-500 {
+  color: var(--color-surface-400) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: var(--color-surface-900) !important;
+  border-color: var(--color-surface-800) !important;
+  color: var(--color-surface-100) !important;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
@@ -65,6 +113,10 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--color-surface-300);
   border-radius: 3px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-surface-700);
 }
 
 ::-webkit-scrollbar-thumb:hover {
