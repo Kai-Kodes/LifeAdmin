@@ -66,10 +66,15 @@ export default function BillForm({
       return;
     }
 
+    if (!amount.trim() || isNaN(parseFloat(amount)) || parseFloat(amount) < 0) {
+      setError('Please enter a valid mandatory bill amount (e.g. 1500.00)');
+      return;
+    }
+
     const formData: BillFormData = {
       name: name.trim(),
       due_date: dueDate,
-      amount: amount !== '' ? parseFloat(amount) : undefined,
+      amount: parseFloat(amount),
       currency,
       notes: notes.trim() || undefined,
     };
@@ -148,7 +153,7 @@ export default function BillForm({
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2 space-y-1.5">
               <label htmlFor="bill-amount" className="block text-sm font-medium text-surface-700 dark:text-surface-300">
-                Amount (Optional)
+                Amount <span className="text-danger-500">*</span>
               </label>
               <input
                 id="bill-amount"
@@ -156,7 +161,10 @@ export default function BillForm({
                 min="0"
                 step="0.01"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  setError(null);
+                }}
                 placeholder="e.g. 1500.00"
                 disabled={isSubmitting}
                 className="w-full rounded-xl border border-surface-200 dark:border-surface-800 px-4 py-2.5 text-sm 

@@ -12,7 +12,7 @@ class BillCreate(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=255, description="Bill title/name")
     due_date: date = Field(..., description="Mandatory due date ('to pay by')")
-    amount: Optional[float] = Field(None, ge=0, description="Optional bill amount")
+    amount: float = Field(..., ge=0, description="Mandatory bill amount")
     currency: str = Field("INR", max_length=10, description="Currency code (e.g. INR, USD)")
     notes: Optional[str] = Field(None, description="Optional notes or reference numbers")
 
