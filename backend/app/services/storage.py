@@ -53,10 +53,17 @@ def _sanitize_filename(filename: str) -> str:
 
 
 def generate_storage_path(obligation_id: str, original_filename: str) -> str:
-    """Generate a safe, unique storage path for an uploaded file."""
+    """Generate a safe, unique storage path for an uploaded attachment file."""
     safe_name = _sanitize_filename(original_filename)
     unique_prefix = uuid.uuid4().hex[:12]
     return f"attachments/{obligation_id}/{unique_prefix}_{safe_name}"
+
+
+def generate_document_storage_path(original_filename: str) -> str:
+    """Generate a safe, unique storage path for an uploaded document file."""
+    safe_name = _sanitize_filename(original_filename)
+    unique_prefix = uuid.uuid4().hex[:12]
+    return f"documents/{unique_prefix}_{safe_name}"
 
 
 class LocalStorage(StorageBackend):
