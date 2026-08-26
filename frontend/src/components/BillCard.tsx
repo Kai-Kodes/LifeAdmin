@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Receipt,
   CheckCircle2,
   Circle,
   Calendar,
@@ -77,7 +76,7 @@ export default function BillCard({
   const getStatusBadge = () => {
     if (bill.is_paid) {
       return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-success-50 dark:bg-success-950/60 px-2.5 py-0.5 text-xs font-semibold text-success-700 dark:text-success-300 border border-success-200 dark:border-success-800">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800 px-2.5 py-0.5 text-xs font-semibold">
           <CheckCircle2 size={13} />
           Paid
         </span>
@@ -89,7 +88,7 @@ export default function BillCard({
     switch (bill.computed_status) {
       case 'overdue':
         return (
-          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-danger-50 dark:bg-danger-950/60 px-2.5 py-0.5 text-xs font-medium text-danger-700 dark:text-danger-300 border border-danger-200 dark:border-danger-800">
+          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-800 px-2.5 py-0.5 text-xs font-medium">
             <Clock size={13} />
             <span>Pay by: {formattedDueDate}</span>
             <span className="opacity-60">•</span>
@@ -99,7 +98,7 @@ export default function BillCard({
       case 'due_today':
       case 'due_soon':
         return (
-          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-warning-50 dark:bg-warning-950/60 px-2.5 py-0.5 text-xs font-medium text-warning-800 dark:text-warning-300 border border-warning-200 dark:border-warning-800">
+          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800 px-2.5 py-0.5 text-xs font-medium">
             <AlertTriangle size={13} />
             <span>Pay by: {formattedDueDate}</span>
             <span className="opacity-60">•</span>
@@ -109,7 +108,7 @@ export default function BillCard({
       case 'upcoming':
       default:
         return (
-          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-primary-50 dark:bg-primary-950/60 px-2.5 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
+          <span className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-300 dark:border-indigo-800 px-2.5 py-0.5 text-xs font-medium">
             <Calendar size={13} />
             <span>Pay by: {formattedDueDate}</span>
             <span className="opacity-60">•</span>
@@ -127,7 +126,7 @@ export default function BillCard({
             bill.is_paid
               ? 'border-surface-200 dark:border-surface-800 opacity-80'
               : bill.computed_status === 'overdue'
-              ? 'border-danger-300 dark:border-danger-800/80 bg-danger-50/20'
+              ? 'border-danger-300 dark:border-danger-800/80 bg-danger-50/20 dark:bg-danger-950/20'
               : 'border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700'
           }`}
       >
@@ -141,7 +140,7 @@ export default function BillCard({
                 className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-transform active:scale-95"
               >
                 {bill.is_paid ? (
-                  <CheckCircle2 size={24} className="text-success-600 dark:text-success-400" />
+                  <CheckCircle2 size={24} className="text-emerald-600 dark:text-emerald-400" />
                 ) : (
                   <Circle size={24} className="text-surface-300 dark:text-surface-600 hover:text-primary-500" />
                 )}
@@ -194,10 +193,10 @@ export default function BillCard({
         <div className="mt-4 pt-3 border-t border-surface-100 dark:border-surface-800 flex items-center justify-between gap-2">
           <button
             onClick={() => onTogglePaid(bill.id)}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
               bill.is_paid
-                ? 'text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800'
-                : 'bg-success-50 dark:bg-success-950/60 text-success-700 dark:text-success-300 hover:bg-success-100 dark:hover:bg-success-900/60'
+                ? 'bg-surface-100 text-surface-600 hover:bg-surface-200 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700'
+                : 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:text-white dark:hover:bg-emerald-500 shadow-xs'
             }`}
           >
             {bill.is_paid ? 'Mark Unpaid' : 'Mark Paid'}
