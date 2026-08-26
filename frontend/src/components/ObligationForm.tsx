@@ -62,47 +62,47 @@ export default function ObligationForm({
     }
   }, [initialData]);
 
-  function validate(): boolean {
-    const newErrors: Record<string, string> = {};
-
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
     if (!formData.title.trim()) {
-      newErrors.title = 'Item name is required';
+      errs.title = 'Item name is required';
     }
     if (!formData.expiry_date) {
-      newErrors.expiry_date = 'Expiry date is required';
+      errs.expiry_date = 'Expiry date is required';
     }
-    if (formData.amount && parseFloat(formData.amount as string) < 0) {
-      newErrors.amount = 'Price cannot be negative';
+    if (formData.purchase_date && formData.expiry_date) {
+      if (formData.purchase_date > formData.expiry_date) {
+        errs.purchase_date = 'Purchase date cannot be after expiry date';
+      }
     }
-    if (formData.purchase_date && formData.expiry_date && formData.purchase_date > formData.expiry_date) {
-      newErrors.purchase_date = 'Purchase date should not be after expiry date';
+    if (formData.amount && (isNaN(Number(formData.amount)) || Number(formData.amount) < 0)) {
+      errs.amount = 'Amount must be a positive number';
     }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-
     setUploadError(null);
 
-    const data: ObligationFormData = {
+    if (!validate()) return;
+
+    if (wantAttachment && !selectedFile && mode === 'create') {
+      setUploadError('Please select a file to attach or uncheck the box.');
+      return;
+    }
+
+    const payload: ObligationFormData = {
       ...formData,
-      title: formData.title.trim(),
-      description: formData.description?.trim() || undefined,
-      provider: formData.provider?.trim() || undefined,
-      purchase_date: formData.purchase_date || undefined,
-      amount: formData.amount ? parseFloat(formData.amount as string) : undefined,
-      notes: formData.notes?.trim() || undefined,
+      amount: formData.amount ? formData.amount : undefined,
     };
 
-    // Pass file only if checkbox is checked and a file is selected
-    onSubmit(data, wantAttachment ? selectedFile : null);
-  }
+    const fileToUpload = wantAttachment ? selectedFile : null;
+    onSubmit(payload, fileToUpload);
+  };
 
-  function updateField(field: keyof ObligationFormData, value: string) {
+  function updateField<K extends keyof ObligationFormData>(field: K, value: ObligationFormData[K]) {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => {
@@ -116,21 +116,21 @@ export default function ObligationForm({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-surface-900/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-surface-900/60 backdrop-blur-xs" />
 
-      {/* Modal */}
+      {/* Modal Container */}
       <div
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl border border-surface-200 animate-in"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-surface-950 shadow-xl border border-surface-200 dark:border-surface-800 animate-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-surface-100 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-t-2xl">
-          <h2 className="text-lg font-semibold text-surface-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-950 px-6 py-4 rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-surface-900 dark:text-white">
             {mode === 'create' ? 'Add Warranty' : 'Edit Warranty'}
           </h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-600"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-600 dark:hover:text-surface-200 transition-colors"
           >
             <X size={18} />
           </button>
@@ -140,7 +140,7 @@ export default function ObligationForm({
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
           {/* Item name */}
           <div>
-            <label htmlFor="form-title" className="block text-sm font-medium text-surface-700 mb-1.5">
+            <label htmlFor="form-title" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
               Item name <span className="text-danger-500">*</span>
             </label>
             <input
@@ -149,42 +149,42 @@ export default function ObligationForm({
               value={formData.title}
               onChange={(e) => updateField('title', e.target.value)}
               placeholder="e.g. Dell Inspiron 15"
-              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 
+              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 dark:placeholder:text-surface-500 
                 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-                ${errors.title ? 'border-danger-500' : 'border-surface-200'}`}
+                ${errors.title ? 'border-danger-500' : 'border-surface-200 dark:border-surface-800'}`}
             />
-            {errors.title && <p className="mt-1 text-xs text-danger-600">{errors.title}</p>}
+            {errors.title && <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{errors.title}</p>}
           </div>
 
           {/* Provider */}
           <div>
-            <label htmlFor="form-provider" className="block text-sm font-medium text-surface-700 mb-1.5">Provider</label>
+            <label htmlFor="form-provider" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Provider</label>
             <input
               id="form-provider"
               type="text"
               value={formData.provider}
               onChange={(e) => updateField('provider', e.target.value)}
               placeholder="e.g. Dell"
-              className="w-full rounded-lg border border-surface-200 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              className="w-full rounded-lg border border-surface-200 dark:border-surface-800 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>
 
           {/* Date row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="form-purchase-date" className="block text-sm font-medium text-surface-700 mb-1.5">Purchase date</label>
+              <label htmlFor="form-purchase-date" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Purchase date</label>
               <input
                 id="form-purchase-date"
                 type="date"
                 value={formData.purchase_date}
                 onChange={(e) => updateField('purchase_date', e.target.value)}
-                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-                  ${errors.purchase_date ? 'border-danger-500' : 'border-surface-200'}`}
+                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+                  ${errors.purchase_date ? 'border-danger-500' : 'border-surface-200 dark:border-surface-800'}`}
               />
-              {errors.purchase_date && <p className="mt-1 text-xs text-danger-600">{errors.purchase_date}</p>}
+              {errors.purchase_date && <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{errors.purchase_date}</p>}
             </div>
             <div>
-              <label htmlFor="form-expiry-date" className="block text-sm font-medium text-surface-700 mb-1.5">
+              <label htmlFor="form-expiry-date" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
                 Expiry date <span className="text-danger-500">*</span>
               </label>
               <input
@@ -192,17 +192,17 @@ export default function ObligationForm({
                 type="date"
                 value={formData.expiry_date}
                 onChange={(e) => updateField('expiry_date', e.target.value)}
-                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-                  ${errors.expiry_date ? 'border-danger-500' : 'border-surface-200'}`}
+                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+                  ${errors.expiry_date ? 'border-danger-500' : 'border-surface-200 dark:border-surface-800'}`}
               />
-              {errors.expiry_date && <p className="mt-1 text-xs text-danger-600">{errors.expiry_date}</p>}
+              {errors.expiry_date && <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{errors.expiry_date}</p>}
             </div>
           </div>
 
           {/* Price row */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
-              <label htmlFor="form-amount" className="block text-sm font-medium text-surface-700 mb-1.5">Purchase price</label>
+              <label htmlFor="form-amount" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Purchase price</label>
               <input
                 id="form-amount"
                 type="number"
@@ -211,18 +211,18 @@ export default function ObligationForm({
                 value={formData.amount}
                 onChange={(e) => updateField('amount', e.target.value)}
                 placeholder="e.g. 65000"
-                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
-                  ${errors.amount ? 'border-danger-500' : 'border-surface-200'}`}
+                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+                  ${errors.amount ? 'border-danger-500' : 'border-surface-200 dark:border-surface-800'}`}
               />
-              {errors.amount && <p className="mt-1 text-xs text-danger-600">{errors.amount}</p>}
+              {errors.amount && <p className="mt-1 text-xs text-danger-600 dark:text-danger-400">{errors.amount}</p>}
             </div>
             <div>
-              <label htmlFor="form-currency" className="block text-sm font-medium text-surface-700 mb-1.5">Currency</label>
+              <label htmlFor="form-currency" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Currency</label>
               <select
                 id="form-currency"
                 value={formData.currency}
                 onChange={(e) => updateField('currency', e.target.value)}
-                className="w-full rounded-lg border border-surface-200 px-3.5 py-2.5 text-sm text-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-white"
+                className="w-full rounded-lg border border-surface-200 dark:border-surface-800 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -233,27 +233,27 @@ export default function ObligationForm({
 
           {/* Description */}
           <div>
-            <label htmlFor="form-description" className="block text-sm font-medium text-surface-700 mb-1.5">Description</label>
+            <label htmlFor="form-description" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Description</label>
             <input
               id="form-description"
               type="text"
               value={formData.description}
               onChange={(e) => updateField('description', e.target.value)}
               placeholder="e.g. Two-year standard warranty"
-              className="w-full rounded-lg border border-surface-200 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              className="w-full rounded-lg border border-surface-200 dark:border-surface-800 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label htmlFor="form-notes" className="block text-sm font-medium text-surface-700 mb-1.5">Notes</label>
+            <label htmlFor="form-notes" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Notes</label>
             <textarea
               id="form-notes"
               value={formData.notes}
               onChange={(e) => updateField('notes', e.target.value)}
               placeholder="e.g. Invoice stored in Google Drive"
               rows={3}
-              className="w-full rounded-lg border border-surface-200 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 resize-none"
+              className="w-full rounded-lg border border-surface-200 dark:border-surface-800 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 resize-none"
             />
           </div>
 
@@ -269,11 +269,11 @@ export default function ObligationForm({
           />
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-100">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-100 dark:border-surface-800">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2.5 text-sm font-medium text-surface-600 hover:bg-surface-100 transition-colors"
+              className="rounded-lg px-4 py-2.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
             >
               Cancel
             </button>

@@ -37,7 +37,7 @@ export default function AppLayout() {
         </div>
 
         {/* Main Nav items */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-1">
           {mainNavItems.map((item) => (
             <NavLink
               key={item.to}
@@ -46,8 +46,8 @@ export default function AppLayout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors
                 ${isActive
-                  ? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold'
-                  : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100'
+                  ? 'bg-primary-600 text-white font-semibold shadow-xs'
+                  : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/80 hover:text-surface-900 dark:hover:text-white'
                 }`
               }
             >
@@ -64,8 +64,8 @@ export default function AppLayout() {
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors
               ${isActive
-                ? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold'
-                : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100'
+                ? 'bg-primary-600 text-white font-semibold shadow-xs'
+                : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/80 hover:text-surface-900 dark:hover:text-white'
               }`
             }
           >
@@ -95,7 +95,7 @@ export default function AppLayout() {
                 <X size={20} />
               </button>
             </div>
-            <nav className="flex-1 px-3 py-4 space-y-0.5">
+            <nav className="flex-1 px-3 py-4 space-y-1">
               {mainNavItems.map((item) => (
                 <NavLink
                   key={item.to}
@@ -105,8 +105,8 @@ export default function AppLayout() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors
                     ${isActive
-                      ? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold'
-                      : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100'
+                      ? 'bg-primary-600 text-white font-semibold shadow-xs'
+                      : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/80 hover:text-surface-900 dark:hover:text-white'
                     }`
                   }
                 >
@@ -123,8 +123,8 @@ export default function AppLayout() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors
                   ${isActive
-                    ? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold'
-                    : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100'
+                    ? 'bg-primary-600 text-white font-semibold shadow-xs'
+                    : 'text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800/80 hover:text-surface-900 dark:hover:text-white'
                   }`
                 }
               >

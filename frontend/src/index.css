@@ -61,7 +61,8 @@ html.dark body {
   color: var(--color-surface-100);
 }
 
-html.dark .bg-white {
+html.dark .bg-white,
+html.dark [class*="bg-white/"] {
   background-color: var(--color-surface-950) !important;
   color: var(--color-surface-100);
 }
@@ -80,7 +81,7 @@ html.dark .border-surface-200 {
 }
 
 html.dark .text-surface-900 {
-  color: var(--color-surface-50) !important;
+  color: #ffffff !important;
 }
 
 html.dark .text-surface-800,
@@ -99,6 +100,13 @@ html.dark textarea {
   background-color: var(--color-surface-900) !important;
   border-color: var(--color-surface-800) !important;
   color: var(--color-surface-100) !important;
+}
+
+/* Force native date picker calendar icons to render light in Dark Mode */
+html.dark input[type="date"],
+html.dark input[type="time"],
+html.dark input[type="datetime-local"] {
+  color-scheme: dark;
 }
 
 /* Scrollbar styling */
